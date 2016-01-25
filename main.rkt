@@ -1546,7 +1546,7 @@
 
 (define stdout (current-output-port))
 (current-output-port (open-output-nowhere))
-(current-error-port (open-output-nowhere))
+;(current-error-port (open-output-nowhere))
 
 (define dc (new svg-dc% [width 1000] [height 1300] [output stdout])) 
 

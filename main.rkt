@@ -37,6 +37,7 @@
 
 (define circlecolor "red")
 
+(provide arc-color)
 (define arc-color "blue")
 
 (provide elaboration)
@@ -52,7 +53,10 @@
   (set! mirrorp b)
   'mirroring-done)
 
+(provide tracing)
 (define tracing #f)
+
+(define edge-color "green")
 
 (provide edge-tracing)
 (define (edge-tracing b o)
@@ -66,6 +70,7 @@
 (provide violin-overhang)
 (define violin-overhang 3.5)
 
+(provide overhang)
 (define overhang cello-overhang)
 
 (define dthreshold -0.75)
@@ -88,11 +93,22 @@
   (set! coder m)
   'codedby-done)
 
+(define rulerp #t)
+
+(provide ruler)
+(define (ruler b)
+  (set! rulerp b)
+  'ruler-done)
+
 (provide first)
 (define first car)
 
 (provide second)
 (define second cadr)
+
+(provide approx)
+(define (approx r)
+  (/ (round (* 100 r)) 100.0))
 
 ; major part M of sections S+M=1
 
@@ -111,7 +127,8 @@
 (provide subharmonic)
 (define subharmonic (- 1 (/ (sqrt 2) 2)))
 
-
+(provide real)
+(define (real x) (+ x 0.0))
 
 (provide square)
 (define (square x) (* x x))
@@ -137,14 +154,14 @@
 
 (define (index n)
   (if (= n 0)
-    (list 0)
-    (cons n (index (- n 1)))))
+      (list 0)
+      (cons n (index (- n 1)))))
 
 (provide ints)
 (define (ints from to)
   (if (> from to)
-    '()
-    (cons from (ints (+ 1 from) to))))
+      '()
+      (cons from (ints (+ 1 from) to))))
 
 (provide scaled)
 (define (scaled s lst)
@@ -152,8 +169,8 @@
 
 (define (begins-with? d tag)
   (if (list? d)
-    (eq? (car d) tag)
-    #f))
+      (eq? (car d) tag)
+      #f))
 
 (provide minus)
 (define (minus x) (- 0 x))
@@ -181,20 +198,20 @@
 
 (define (labelof p)
   (if (point? p)
-    (cadr p)
-    (callerror '(labelof: not a point) p)))
+      (cadr p)
+      (callerror '(labelof: not a point) p)))
 
 (provide xcor)
 (define (xcor p)
   (if (point? p)
-    (caddr p)
-    (callerror '(xcor: not a point) p)))
+      (caddr p)
+      (callerror '(xcor: not a point) p)))
 
 (provide ycor)
 (define (ycor p)
   (if (point? p)
-    (cadddr p)
-    (callerror '(ycor: not a point) p)))
+      (cadddr p)
+      (callerror '(ycor: not a point) p)))
 
 (provide xshift)
 (define (xshift p d)
@@ -214,14 +231,14 @@
 (provide transpose)
 (define (transpose obj)
   (if (point? obj)
-    (point (ycor obj) (xcor obj))
-    (if (line? obj)
-      (line (transpose (cadr obj)) 
-            (transpose (caddr obj)))
-      (if (circle? obj)
-        (circle (transpose (cadr obj))
-                (caddr obj))
-        (callerror '(transpose: what?) obj)))))
+      (point (ycor obj) (xcor obj))
+      (if (line? obj)
+          (line (transpose (cadr obj)) 
+                (transpose (caddr obj)))
+          (if (circle? obj)
+              (circle (transpose (cadr obj))
+                      (caddr obj))
+              (callerror '(transpose: what?) obj)))))
 
 (provide xdistance)
 (define (xdistance p1 p2)
@@ -245,32 +262,32 @@
 (define (left twopoints)
   ((if (< (xcor (car twopoints))
           (xcor (cadr twopoints)))
-     car
-     cadr)
+       car
+       cadr)
    twopoints))
 
 (provide right)
 (define (right twopoints)
   ((if (< (xcor (car twopoints))
           (xcor (cadr twopoints)))
-     cadr
-     car)
+       cadr
+       car)
    twopoints))
 
 (provide bottom)
 (define (bottom twopoints)
   ((if (< (ycor (car twopoints))
           (ycor (cadr twopoints)))
-     car
-     cadr)
+       car
+       cadr)
    twopoints))
 
 (provide top)
 (define (top twopoints)
   ((if (< (ycor (car twopoints))
           (ycor (cadr twopoints)))
-     cadr
-     car)
+       cadr
+       car)
    twopoints))
 
 ; distance
@@ -305,13 +322,21 @@
 (define (scalevec s v)
   (point (* s (xcor v)) (* s (ycor v))))
 
+(provide xscale)
+(define (xscale s v)
+  (point (* s (xcor v)) (ycor v)))
+
+(provide yscale)
+(define (yscale s v)
+  (point (xcor v)) (* s (ycor v)))
+  
 ;; Lines
 
 (provide line)
 (define (line p1 p2)
   (if (and (point? p1) (point? p2))
-    (list 'line p1 p2)
-    (callerror '(line: not both points) p1 p2)))
+           (list 'line p1 p2)
+           (callerror '(line: not both points) p1 p2)))
 
 (define (line? L)
   (begins-with? L 'line))
@@ -319,14 +344,14 @@
 (provide first-point)
 (define (first-point L)
   (if (line? L)
-    (cadr L)
-    (callerror '(first-point: not a line) L)))
+      (cadr L)
+      (callerror '(first-point: not a line) L)))
 
 (provide second-point)
 (define (second-point L)
   (if (line? L)
-    (caddr L)
-    (callerror '(second-point: not a line) L)))
+      (caddr L)
+      (callerror '(second-point: not a line) L)))
 
 (provide mirrorline)
 (define (mirrorline L)
@@ -335,28 +360,28 @@
 (provide slope)
 (define (slope L)
   (if (line? L)
-    (let ((x0 (xcor (first-point L)))
-          (y0 (ycor (first-point L)))
-          (x1 (xcor (second-point L)))
-          (y1 (ycor (second-point L))))
-      (let ((xdiff (- x1 x0)))
-        (if (= xdiff 0)
-          'infinity
-          (let ((m (/ (- y1 y0) xdiff)))
-            (if (> (abs m) 10000)
+      (let ((x0 (xcor (first-point L)))
+            (y0 (ycor (first-point L)))
+            (x1 (xcor (second-point L)))
+            (y1 (ycor (second-point L))))
+        (let ((xdiff (- x1 x0)))
+          (if (= xdiff 0)
               'infinity
-              m)))))
-    (callerror '(slope: not a line) L)))
+              (let ((m (/ (- y1 y0) xdiff)))
+                (if (> (abs m) 10000)
+                    'infinity
+                    m)))))
+      (callerror '(slope: not a line) L)))
 
 (define (offset L)
   (if (line? L)
-    (let ((m (slope L)))
-      (if (eq? m 'infinity)
-        '(offset error)
-        (let ((x0 (xcor (first-point L)))
-              (y0 (ycor (first-point L))))
-          (- y0 (* m x0)))))
-    (callerror '(offset: not a line) L)))
+      (let ((m (slope L)))
+        (if (eq? m 'infinity)
+            '(offset error)
+            (let ((x0 (xcor (first-point L)))
+                  (y0 (ycor (first-point L))))
+              (- y0 (* m x0)))))
+      (callerror '(offset: not a line) L)))
 
 (define (make-line-slope-offset slope offset)
   (line (point 0 offset) (point 1 (+ offset slope))))
@@ -385,8 +410,8 @@
 (define (horizontal? L)
   (let ((s (slope L)))
     (if (number? s)
-      (< (abs s) .001)
-      #f)))
+        (< (abs s) .001)
+        #f)))
 
 (provide x-axis)
 (define x-axis (line origin (point 100 0)))
@@ -400,22 +425,28 @@
 (provide vertical)
 (define (vertical p) (line p (point (xcor p) (+ (ycor p) 100))))
 
+(provide horizontals)
+(define horizontals (lambda x (map horizontal x)))
+
+(provide verticals)
+(define verticals (lambda x (map vertical x)))
+
 (provide at)
 ;(define (at V H) (intersect (vertical V) (horizontal H)))
 (define (at p q) (point (xcor p) (ycor q)))
-
+  
 ;; Circles
 
 (define (distance? d)
   (if (number? d)
-    (>= d 0)
-    #f))
+      (>= d 0)
+      #f))
 
 (provide circle)
 (define (circle c d)
   (if (and (point? c) (distance? d))
-    (list 'circle c d)
-    (callerror '(circle: not a point or a distance) c d)))
+      (list 'circle c d)
+      (callerror '(circle: not a point or a distance) c d)))
 
 (provide circlefrom)
 (define (circlefrom p q) (circle p (distance p q)))
@@ -426,14 +457,14 @@
 (provide center)
 (define (center circle)
   (if (circle? circle)
-    (cadr circle)
-    (callerror '(center: not a circle) circle)))
+      (cadr circle)
+      (callerror '(center: not a circle) circle)))
 
 (provide radius)
 (define (radius circle)
   (if (circle? circle)
-    (caddr circle)
-    (callerror '(radius: not a circle) circle)))
+      (caddr circle)
+      (callerror '(radius: not a circle) circle)))
 
 (provide csquish)
 (define (csquish c p)
@@ -443,8 +474,8 @@
 (define (right-circle circles)
   (let ((circle1 (car circles))
         (circle2 (cadr circles)))
-    (if (> (xcor (center circle1))
-           (xcor (center circle2)))
+  (if (> (xcor (center circle1))
+         (xcor (center circle2)))
       circle1
       circle2)))
 
@@ -452,8 +483,8 @@
 (define (left-circle circles)
   (let ((circle1 (car circles))
         (circle2 (cadr circles)))
-    (if (< (xcor (center circle1))
-           (xcor (center circle2)))
+  (if (< (xcor (center circle1))
+         (xcor (center circle2)))
       circle1
       circle2)))
 
@@ -461,8 +492,8 @@
 (define (upper-circle circles)
   (let ((circle1 (car circles))
         (circle2 (cadr circles)))
-    (if (> (ycor (center circle1))
-           (ycor (center circle2)))
+  (if (> (ycor (center circle1))
+         (ycor (center circle2)))
       circle1
       circle2)))
 
@@ -470,8 +501,8 @@
 (define (lower-circle circles)
   (let ((circle1 (car circles))
         (circle2 (cadr circles)))
-    (if (> (ycor (center circle1))
-           (ycor (center circle2)))
+  (if (> (ycor (center circle1))
+         (ycor (center circle2)))
       circle2
       circle1)))
 
@@ -499,24 +530,24 @@
 
 (define (intersect-line-line line1 line2)
   (if (and (vertical? line2) (vertical? line1))
-    (callerror '(intersect-line-line: both vertical) line1 line2)
-    (if (vertical? line1)
-      (intersect-line-line line2 line1) 
-      ;; Now first line is not vertical
-      (if (vertical? line2)
-        (let ((m (slope line1))
-              (b (offset line1))
-              (x (xcor (first-point line2))))
-          (point x (+ (* m x) b)))
-        (let ((m1 (slope line1))
-              (m2 (slope line2))
-              (b1 (offset line1))
-              (b2 (offset line2)))                    
-          (if (and (= m1 m2) (= b1 b2))
-            (callerror '(intersect-line-line: identical lines) line1 line2)
-            (point (/ (- b2 b1) (- m1 m2))
-                   (/ (- (* m2 b1) (* m1 b2))
-                      (- m2 m1)))))))))
+      (callerror '(intersect-line-line: both vertical) line1 line2)
+      (if (vertical? line1)
+          (intersect-line-line line2 line1) 
+          ;; Now first line is not vertical
+          (if (vertical? line2)
+              (let ((m (slope line1))
+                    (b (offset line1))
+                    (x (xcor (first-point line2))))
+                (point x (+ (* m x) b)))
+              (let ((m1 (slope line1))
+                    (m2 (slope line2))
+                    (b1 (offset line1))
+                    (b2 (offset line2)))                    
+                (if (and (= m1 m2) (= b1 b2))
+                    (callerror '(intersect-line-line: identical lines) line1 line2)
+                    (point (/ (- b2 b1) (- m1 m2))
+                           (/ (- (* m2 b1) (* m1 b2))
+                              (- m2 m1)))))))))
 
 ;; for roundoff errors...
 
@@ -528,15 +559,18 @@
 (define (quadsolve a b c) ;; solutions to ax^2+bx+c = 0
   (let ((d (correct (- (* b b) (* 4 a c)))))
     (if (< d dthreshold)
-      (callerror '(quadsolve: no solutions) a b c d)
-      (let ((negb (- 0 b))
-            (d (if (< d 0) 0 d)))
-        (if (= d 0)
-          (list (/ negb (* 2 a)))
-          (let ((sqrtd (sqrt d))
-                (twoa (* 2 a)))
-            (list (/ (+ negb sqrtd) twoa)
-                  (/ (- negb sqrtd) twoa))))))))           
+;        (begin (write (list '(quadsolve: no solutions) a b c d))
+;               (newline)
+;               (list (/ (* -2 a))))
+        (callerror '(quadsolve: no solutions) a b c d)
+        (let ((negb (- 0 b))
+              (d (if (< d 0) 0 d)))
+          (if (= d 0)
+              (list (/ negb (* 2 a)))
+              (let ((sqrtd (sqrt d))
+                    (twoa (* 2 a)))
+                (list (/ (+ negb sqrtd) twoa)
+                      (/ (- negb sqrtd) twoa))))))))           
 
 (define (intersect-circle-line c l)
   (let ((x0 (xcor (center c)))
@@ -547,36 +581,36 @@
         (x2 (xcor (second-point l)))
         (y2 (ycor (second-point l))))
     (if (vertical? l)
-      (let ((solns
-              (intersect-circle-line
+        (let ((solns
+               (intersect-circle-line
                 (circle (point y0 x0) d)
                 (line (point y1 x1) (point y2 x2)))))
-        (if (point? solns) (transpose solns) (map transpose solns)))
-      (let ((m (slope l))
-            (b (offset l)))
-        (let ((aa (+ (square m) 1))
-              (bb (* 2 (+ (* b m)
-                          (- (* y0 m))
-                          (- x0))))
-              (cc (+ (square b)
-                     (square x0)
-                     (- (* 2 y0 b))
-                     (square y0)
-                     (- (square d)))))
-          (let ((solns (map (lambda (x) (point x (+ (* m x) b)))
-                            (quadsolve aa bb cc))))
-            (if (null? solns) 
-              '()
-              (if (= (length solns) 1)
-                solns
-                (let ((x0 (xcor (first-point l)))
-                      (x1 (xcor (second-point l)))
-                      (sx0 (xcor (car solns)))
-                      (sx1 (xcor (cadr solns))))
-                  (if (= (sign (- x1 x0))
-                         (sign (- sx1 sx0)))
-                    solns
-                    (list (cadr solns) (car solns))))))))))))
+          (if (point? solns) (transpose solns) (map transpose solns)))
+        (let ((m (slope l))
+              (b (offset l)))
+          (let ((aa (+ (square m) 1))
+                (bb (* 2 (+ (* b m)
+                           (- (* y0 m))
+                           (- x0))))
+                (cc (+ (square b)
+                      (square x0)
+                      (- (* 2 y0 b))
+                      (square y0)
+                      (- (square d)))))
+            (let ((solns (map (lambda (x) (point x (+ (* m x) b)))
+                              (quadsolve aa bb cc))))
+             (if (null? solns) 
+                 '()
+                 (if (= (length solns) 1)
+                     solns
+                     (let ((x0 (xcor (first-point l)))
+                           (x1 (xcor (second-point l)))
+                           (sx0 (xcor (car solns)))
+                           (sx1 (xcor (cadr solns))))
+                       (if (= (sign (- x1 x0))
+                              (sign (- sx1 sx0)))
+                           solns
+                           (list (cadr solns) (car solns))))))))))))
 
 (define (vesica-piscis c1 c2) 
   ;; returns the line through the vesica picis of circles c1 and c2
@@ -587,59 +621,59 @@
         (d1 (radius c1))
         (d2 (radius c2)))
     (if (= y1 y2)
-      (let ((l (vesica-piscis (circle (point y1 x1) d1)
-                              (circle (point y2 x2) d2))))
-        (let ((x3 (xcor (first-point l)))
-              (y3 (ycor (first-point l)))
-              (x4 (xcor (second-point l)))
-              (y4 (ycor (second-point l))))
-          (line (point y3 x3) (point y4 x4))))
-      (let ((d (* 2 (- y2 y1))))
-        (let ((u (/ (- (+ (square d1) (square x2) (square y2))
-                       (+ (square d2) (square x1) (square y1)))
-                    d))
-              (v (/ (* 2 (- x1 x2)) d)))
-          (line (point 0 u) (point 1 (+ u v))))))))
+        (let ((l (vesica-piscis (circle (point y1 x1) d1)
+                                (circle (point y2 x2) d2))))
+          (let ((x3 (xcor (first-point l)))
+                (y3 (ycor (first-point l)))
+                (x4 (xcor (second-point l)))
+                (y4 (ycor (second-point l))))
+            (line (point y3 x3) (point y4 x4))))
+        (let ((d (* 2 (- y2 y1))))
+          (let ((u (/ (- (+ (square d1) (square x2) (square y2))
+                         (+ (square d2) (square x1) (square y1)))
+                      d))
+                (v (/ (* 2 (- x1 x2)) d)))
+            (line (point 0 u) (point 1 (+ u v))))))))
 
 
 (define (intersect-circle-circle c1 c2)
   (if (equal? (center c1) (center c2))
-    (callerror '(intersect-circle-circle: same center) (center c1))
-    (if (> (- (distance (center c1) (center c2))
-              (+ (radius c1) (radius c2)))
-           .001)
-      (callerror '(intersect-circle-circle: circles too far apart) c1 c2)
-      (intersect-circle-line c1 (vesica-piscis c1 c2)))))
+      (callerror '(intersect-circle-circle: same center) (center c1))
+      (if (> (- (distance (center c1) (center c2))
+                (+ (radius c1) (radius c2)))
+             .001)
+          (callerror '(intersect-circle-circle: circles too far apart) c1 c2)
+          (intersect-circle-line c1 (vesica-piscis c1 c2)))))
 
 (provide intersect)
 (define (intersect p q)
   (let ((ints
-          (if (and (circle? q) (not (circle? p)))
-            (intersect q p)
-            (if (circle? p)
-              (if (circle? q)
-                (intersect-circle-circle p q)
-                (if (line? q)
+         (if (and (circle? q) (not (circle? p)))
+      (intersect q p)
+      (if (circle? p)
+          (if (circle? q)
+              (intersect-circle-circle p q)
+              (if (line? q)
                   (intersect-circle-line p q)
                   (callerror '(intersect: what) p q) ))
-              (if (line? p)
-                (if (line? q)
+          (if (line? p)
+              (if (line? q)
                   (intersect-line-line p q)
                   (callerror '(intersect: what) p q) )
-                (callerror '(intersect: what) p q) )))))
+              (callerror '(intersect: what) p q) )))))
     (if (= (length ints) 1)
-      (car ints)
-      (if (= (length ints) 2)
-        (if (< (apply distance ints) 0.0001) (apply midpoint ints) ints)
-        ints))))
+        (car ints)
+        (if (= (length ints) 2)
+            (if (< (apply distance ints) 0.0001) (apply midpoint ints) ints)
+            ints))))
 
 (provide closest)
 (define (closest p pts)
-  ;  (write (list 'closest p pts))(newline)
+;  (write (list 'closest p pts))(newline)
   (if (< (distance p (car pts))
          (distance p (cadr pts)))
-    (car pts)
-    (cadr pts)))
+      (car pts)
+      (cadr pts)))
 
 ;; Arithmetic with a ruler and compass
 
@@ -688,13 +722,13 @@
         (px (xcor p))
         (py (ycor p)))
     (if (vertical? l)
-      (horizontal p)
-      (if (= m 0)
-        (line (point px (ycor (first-point l)))
-              (point px (+ (ycor (first-point l)) py)))
-        (let ((mm (- (/ 1 m)))
-              (b (+ py (* (/ 1 m) px))))
-          (funline (lambda (x) (+ b (* mm x))))))))) 
+        (horizontal p)
+        (if (= m 0)
+            (line (point px (ycor (first-point l)))
+                  (point px (+ (ycor (first-point l)) py)))
+            (let ((mm (- (/ 1 m)))
+                  (b (+ py (* (/ 1 m) px))))
+              (funline (lambda (x) (+ b (* mm x))))))))) 
 
 (define (distance-line-point l p)
   (distance p (perpendicular l p)))
@@ -703,7 +737,7 @@
 ; line between two points
 (define (bisector p q)
   (perpendicular (line p q) (midpoint p q)))
-
+    
 (provide pointfrom)
 ; parameterized point: t=0 at a, t=1 at b (on line from a to b)
 (define (pointfrom a b t)
@@ -736,18 +770,18 @@
           (cx (xcor cc))
           (cy (ycor cc)))
       (if (and (= cx px) (= cy py))
-        (callerror '(tangent-circle-point: no tangent) c p)
-        (let ((pts (intersect c l)))
-          (let ((ls (map (lambda (p) (perpendicular l p))
-                         pts)))
-            (if (null? pts)
-              '()
-              (if (= (length pts) 1)
-                (car ls)
-                (if (< (distance p (car pts))
-                       (distance p (cadr pts)))
-                  (car ls)
-                  (cadr ls))))))))))
+          (callerror '(tangent-circle-point: no tangent) c p)
+          (let ((pts (intersect c l)))
+            (let ((ls (map (lambda (p) (perpendicular l p))
+                           pts)))
+              (if (null? pts)
+                  '()
+                  (if (= (length pts) 1)
+                      (car ls)
+                      (if (< (distance p (car pts))
+                             (distance p (cadr pts)))
+                          (car ls)
+                          (cadr ls))))))))))
 
 (provide tangent-circle-line)
 (define (tangent-circle-line c l)
@@ -767,8 +801,8 @@
   (let* ((pl (perpendicular l (center c)))
          (q (intersect pl l))
          (cl (closest q (intersect pl c))))
-    ;    (write (list '?? (- (distance (center c) cl) (radius c))))
-    ;    (newline)
+;    (write (list '?? (- (distance (center c) cl) (radius c))))
+;    (newline)
     cl))
 
 (provide tangent)    
@@ -863,8 +897,8 @@
          (newcirc (circle (center icirc) (- r (radius icirc))))
          (pts (intersect newline newcirc)))
     (if (point? pts)
-      (circle pts r)
-      (circle (bout pts) r))))
+        (circle pts r)
+        (circle (bout pts) r))))
 
 ; inscribing squares around circles
 
@@ -901,7 +935,7 @@
 (provide rotated-inscribesquare)
 (define (rotated-inscribesquare circ)
   (rotated-outscribesquare (circle (center circ) 
-                                   (* (radius circ) (/ 1 (sqrt 2))))))
+                           (* (radius circ) (/ 1 (sqrt 2))))))
 (provide geometric-section)
 
 (define (geometric-section p q) 
@@ -916,7 +950,7 @@
 ;         (u (closest p (intersect (line r s) (circle s (distance s t)))))
 ;         (v (intersect (line p q) (perpendicular (line r s) u))))
 ;    v))
-
+  
 
 (provide upper-left-flank)
 (define (upper-left-flank l c r)
@@ -952,7 +986,7 @@
 (provide right-flush)
 (define (right-flush c r)
   (circlefrom (xshift (east c) (- r)) (east c)))
-
+ 
 (provide lower-corner)
 (define (lower-corner base-circle moving-circle-radius p)
   (lower-circle (reverse-curve base-circle
@@ -996,14 +1030,14 @@
     (let ((n (index (/ d 10))))
       (map (lambda (i) 
              (drawrulersegment (point (+ x (* 10 i)) y) 
-                               (point (+ x (* 10 i)) (- y (if (= 0 (remainder i 5)) 12 4))))
+                          (point (+ x (* 10 i)) (- y (if (= 0 (remainder i 5)) 12 4))))
              (if (= 0 (remainder i 5))
-               (let ((p (map-point  (point (+ x (* 10 i)) (+ y 10)))))
-                 (let ((a (xcor p))
-                       (b (ycor p)))
-                   (let ((m (+ (* 10 (abs (- i (/ d 20)))) 0)))
-                     (send dc draw-text (if (< m 300) (~r m) "") a b))))
-               'nothing))             
+                 (let ((p (map-point  (point (+ x (* 10 i)) (+ y 10)))))
+                   (let ((a (xcor p))
+                         (b (ycor p)))
+                     (let ((m (+ (* 10 (abs (- i (/ d 20)))) 0)))
+                       (send dc draw-text (if (< m 300) (~r m) "") a b))))
+                 'nothing))             
            n))))
 
 (provide vruler)
@@ -1014,19 +1048,19 @@
     (let ((n (index (/ d 10))))
       (map (lambda (i) 
              (drawrulersegment (point (- x) (- y (* 10 i)))
-                               (point (+ (- x) (if (= 0 (remainder i 5)) -12 -4)) (- y (* 10 i))))
+                          (point (+ (- x) (if (= 0 (remainder i 5)) -12 -4)) (- y (* 10 i))))
              (if (= 0 (remainder i 5))
-               (let ((p (map-point (point (- 5 x) (- y (* 10 i))))))
-                 (let ((a (xcor p))
-                       (b (ycor p)))
-                   (send dc draw-text (let ((j (* 10 (- i (/ d 20)))))
-                                        (if (< (- j) 500) (~r (abs j)) "")) (+ a 5) (- b 8))))
-               'nothing))             
+                 (let ((p (map-point (point (- 5 x) (- y (* 10 i))))))
+                   (let ((a (xcor p))
+                         (b (ycor p)))
+                     (send dc draw-text (let ((j (* 10 (- i (/ d 20)))))
+                                          (if (< (- j) 500) (~r (abs j)) "")) (+ a 5) (- b 8))))
+                 'nothing))             
            n))))
 
 (define (drawrulersegment p1 p2)
-  (let ((p1 (map-point p1))
-        (p2 (map-point p2)))
+    (let ((p1 (map-point p1))
+          (p2 (map-point p2)))
     (send dc set-pen arc-color 0 'solid)
     (send dc draw-line (xcor p1) (ycor p1) (xcor p2) (ycor p2))))
 
@@ -1044,9 +1078,9 @@
   (let ((x (xcor p))
         (y (ycor p)))
     (let ((x (+ (* scale x) (* 0 y)))
-
+          
           (y (+ (* 0 x) (* (- scale) y))))
-      (point (+ x (/ xx 2)) (+ y (/ yy 2))))))
+     (point (+ x (/ xx 2)) (+ y (/ yy 2))))))
 
 ;(define (mp x y)
 ;  (make-posn (+ x (quotient xx 2)) (- (quotient yy 2) y)))
@@ -1062,21 +1096,21 @@
 
 (define (drawit obj)
   (if (circle? obj)
-    (drawcircle obj circlecolor)
-    (if (line? obj)
-      (begin (drawline obj "green")
-             (if mirrorp (drawline (mirrorline obj) "green") 'nothing))
-      'nothing)))
+      (drawcircle obj circlecolor)
+      (if (line? obj)
+          (begin (drawline obj "green")
+                 (if mirrorp (drawline (mirrorline obj) "green") 'nothing))
+          'nothing)))
 
 (define (ddrawit obj) 
   (if drawp (drawit obj) 'drawn))
 
 (define (draw-point p c)
   (if drawp 
-    (begin (draw-point-1 p c)
-           ;             (if mirrorp (draw-point-1 (mirror p) c) 'nothing))
-           (if #f (draw-point-1 (mirror p) c) 'nothing))
-    'nothing))
+      (begin (draw-point-1 p c)
+;             (if mirrorp (draw-point-1 (mirror p) c) 'nothing))
+             (if #f (draw-point-1 (mirror p) c) 'nothing))
+      'nothing))
 
 (define (draw-point-1 pt c)
   (let ((p (map-point pt)))
@@ -1090,20 +1124,21 @@
   (let* ((l (line p1 p2))
          (l1 (perpendicular l p1))
          (l2 (perpendicular l p2))
-         (c1 (circle p1 overhang))
-         (c2 (circle p2 overhang)))
+         (c1 (circle p1 (abs overhang)))
+         (c2 (circle p2 (abs overhang))))
     (if (= (sign (xcor p1)) (sign (xcor p2)))
-      (if (< (xcor p1) 0)
-        (draw-solid-line (left (intersect l1 c1)) (left (intersect l2 c2)) "pink")
-        (draw-solid-line (right (intersect l1 c1)) (right (intersect l2 c2)) "pink"))
-      'nothing)))
-
+        (if (or (and (< (xcor p1) 0) (> overhang 0))
+                (and (> (xcor p1) 0) (< overhang 0)))
+            (draw-solid-line (left (intersect l1 c1)) (left (intersect l2 c2)) edge-color)
+            (draw-solid-line (right (intersect l1 c1)) (right (intersect l2 c2)) edge-color))
+        'nothing)))
+      
 (define (drawsolidline p1 p2 c)   
   (let ((p1 (map-point p1))
         (p2 (map-point p2)))
     (send dc set-pen c (if (eq? c arc-color) arc-thickness 0) 'solid)
     (send dc draw-line (xcor p1) (ycor p1) (xcor p2) (ycor p2))))        
-
+  
 (define (draw-solid-line p1 p2 c)
   (drawsolidline p1 p2 c)
   (if (and tracing (eq? c arc-color)) (edge-line p1 p2) 'nothing))
@@ -1115,10 +1150,10 @@
                     (p2 (map-point (second-point l))))
                 (let ((l (line p1 p2)))
                   (if (eq? (slope l) 'infinity)
-                    (send dc draw-line (xcor p1) 1 (xcor p1) yy)
-                    (let ((f (linefun l)))
-                      (send dc draw-line 1 (f 0) xx (f xx)))))))
-    'nothing))
+                      (send dc draw-line (xcor p1) 1 (xcor p1) yy)
+                      (let ((f (linefun l)))
+                        (send dc draw-line 1 (f 0) xx (f xx)))))))
+            'nothing))
 
 (define (drawcircle circ c)
   (if drawp (begin
@@ -1130,25 +1165,25 @@
                   (send dc set-pen c 0 'solid)
                   (send dc set-brush c 'transparent)
                   (send dc draw-ellipse (xcor q) (ycor q) (* 2 r) (* 2 r)))))
-    'nothing))
+      'nothing))
 
 (define (angle y x)
-  ;  (write (list 'ANGLE* y x)) (newline)
+;  (write (list 'ANGLE* y x)) (newline)
   (if (= x 0)
-    (if (> y 0)
-      (/ pi 2)
-      (* 3 (/ pi 2)))
-    (if (= y 0)
-      (if (> x 0)
-        0
-        pi)
-      (if (> x 0)
-        (if (> y 0)
-          (atan (/ y x))
-          (+ (* pi 1.5) (atan (/ x (- y)))))
-        (if (> y 0)
-          (+ (* pi 0.5) (atan (/ (- x) y)))
-          (+ pi (atan (/ y x))))))))
+      (if (> y 0)
+          (/ pi 2)
+          (* 3 (/ pi 2)))
+      (if (= y 0)
+          (if (> x 0)
+              0
+              pi)
+          (if (> x 0)
+              (if (> y 0)
+                  (atan (/ y x))
+                  (+ (* pi 1.5) (atan (/ x (- y)))))
+              (if (> y 0)
+                  (+ (* pi 0.5) (atan (/ (- x) y)))
+                  (+ pi (atan (/ y x))))))))
 
 (define (ang p) (* (/ 360 (* 2 pi)) (angle (ycor p) (xcor p))))
 
@@ -1162,12 +1197,12 @@
   (let ((o (map-point oo))
         (p (map-point pt)))
     (if (nearline? p (vertical o))
-      (if (< (ycor p) (ycor o)) (* pi 0.5) (* pi 1.5))
-      (if (nearline? p (horizontal o))
-        (if (> (xcor p) (xcor o)) 0 pi)
-        (let ((q (intersect (horizontal o) (vertical p))))
-          (begin ;(write '!)
-            (angle (- (ycor q) (ycor p)) (- (xcor q) (xcor o)))))))))
+        (if (< (ycor p) (ycor o)) (* pi 0.5) (* pi 1.5))
+        (if (nearline? p (horizontal o))
+            (if (> (xcor p) (xcor o)) 0 pi)
+              (let ((q (intersect (horizontal o) (vertical p))))
+                (begin ;(write '!)
+                       (angle (- (ycor q) (ycor p)) (- (xcor q) (xcor o)))))))))
 
 ;; **********  under construction
 ;; replacing arc drawing by segments
@@ -1175,8 +1210,8 @@
 (define Delta 1)
 
 (define (dsl p1 p2)
-  (send dc set-pen arc-color 0 'solid)
-  (send dc draw-line (xcor p1) (ycor p1) (xcor p2) (ycor p2)))
+    (send dc set-pen arc-color 0 'solid)
+    (send dc draw-line (xcor p1) (ycor p1) (xcor p2) (ycor p2)))
 
 (define (darc x y w a b)
   (let ((c (point (+ x (/ w 2)) (- y (/ w 2))))
@@ -1185,11 +1220,11 @@
 
 (define (darciter c r a b inc)
   (if (> a b)
-    'done
-    (begin
-      (dsl (map-point (vec+ c (point (* r (cos a)) (* r (sin a)))))
-           (map-point (vec+ c (point (* r (cos (+ a inc))) (* r (sin (+ a inc)))))))
-      (darciter c r (+ a inc) b inc))))
+      'done
+      (begin
+        (dsl (map-point (vec+ c (point (* r (cos a)) (* r (sin a)))))
+             (map-point (vec+ c (point (* r (cos (+ a inc))) (* r (sin (+ a inc)))))))
+        (darciter c r (+ a inc) b inc))))
 
 ;(darc 0 0 100 (* pi 0.25) (* pi 1.25))
 
@@ -1205,18 +1240,18 @@
          (p (intersect (horizontal c) (vertical origin)))
          (q (closest p (intersect circ (horizontal c)))))
     (if (< (distance c q) (distance c p))
-      -1
-      +1)))
-
+        -1
+        +1)))
+  
 (define (drawarc oo pt1 pt2 c)
   (let ((oc (orientation (circlefrom oo pt1))))
     (drawarc-a oo pt1 pt2 c)
     (if tracing
-      (drawarc-a oo (extend oo pt1 oc) (extend oo pt2 oc) "pink")
-      'nothing)))
+        (drawarc-a oo (extend oo pt1 oc) (extend oo pt2 oc) edge-color)
+        'nothing)))
 
 (define (drawarc-a oo pt1 pt2 c)
-  ;  (write (list 'DA (- (distance oo pt1) (distance oo pt2)))) (newline)
+;  (write (list 'DA (- (distance oo pt1) (distance oo pt2)))) (newline)
   (drawarc-1 oo pt1 pt2 c)
   (if mirrorp (drawarc-1 (mirror oo) (mirror pt1) (mirror pt2) c) 'done))
 
@@ -1227,43 +1262,43 @@
   (set! arc-thickness n))
 
 (define (drawarc-1 oo pt1 pt2 c)
-  ;  (send dc set-pen c 1 'short-dash)
+;  (send dc set-pen c 1 'short-dash)
   (drawseg oo pt1)
   (drawseg oo pt2)
-  ;  (write (list 'DRAWARC oo pt1 pt2)) (newline)
+;  (write (list 'DRAWARC oo pt1 pt2)) (newline)
   (let ((alpha (arcrad oo pt1))
         (beta (arcrad oo pt2))
         (r1 (distance (map-point oo) (map-point pt1)))
         ;code is only using r1, not r2 (for later deformation)
         (r2 (distance (map-point oo) (map-point pt2))))
-    (let ((alpha (min alpha beta))
-          (beta (max alpha beta))
-          (corner (vec+ (map-point oo) (scalevec r1 (point -1 -1)))))
-      ;            (write (list (r->ang alpha) (r->ang beta))) (newline)
-      (send dc set-pen "yellow" 0 'solid)
-      (send dc set-brush "yellow" 'transparent)
-      ;            (send dc draw-rectangle (xcor corner) (ycor corner) (* 2 r) (* 2 r))
-      (send dc set-pen c arc-thickness 'solid)
-      (send dc set-brush c 'transparent)
-      (if (> (- beta alpha) pi)
-        ; 0.0 was 0.5
-        ;              (darc (+ 0.0 (xcor corner)) (+ 0.0 (ycor corner))
-        ;                                (* 2 (+ 0.0 r)) 
-        ;                                beta (+ alpha (* 2 pi)))
-        ;              (darc (+ 0.0 (xcor corner)) (+ 0.0 (ycor corner))
-        ;                                (* 2 (+ 0.0 r)) 
-        ;                                alpha beta)
-        (send dc draw-arc (+ 0.0 (xcor corner)) (+ 0.0 (ycor corner))
-              (* 2 (+ 0.0 r1)) (* 2 (+ 0.0 r1)) 
-              beta (+ alpha (* 2 pi)))
-        (send dc draw-arc (+ 0.0 (xcor corner)) (+ 0.0 (ycor corner))
-              (* 2 (+ 0.0 r1)) (* 2 (+ 0.0 r1))
-              alpha beta)
-        ))))
+          (let ((alpha (min alpha beta))
+                (beta (max alpha beta))
+                (corner (vec+ (map-point oo) (scalevec r1 (point -1 -1)))))
+;            (write (list (r->ang alpha) (r->ang beta))) (newline)
+            (send dc set-pen "yellow" 0 'solid)
+            (send dc set-brush "yellow" 'transparent)
+;            (send dc draw-rectangle (xcor corner) (ycor corner) (* 2 r) (* 2 r))
+            (send dc set-pen c arc-thickness 'solid)
+            (send dc set-brush c 'transparent)
+            (if (> (- beta alpha) pi)
+                ; 0.0 was 0.5
+;              (darc (+ 0.0 (xcor corner)) (+ 0.0 (ycor corner))
+;                                (* 2 (+ 0.0 r)) 
+;                                beta (+ alpha (* 2 pi)))
+;              (darc (+ 0.0 (xcor corner)) (+ 0.0 (ycor corner))
+;                                (* 2 (+ 0.0 r)) 
+;                                alpha beta)
+              (send dc draw-arc (+ 0.0 (xcor corner)) (+ 0.0 (ycor corner))
+                                (* 2 (+ 0.0 r1)) (* 2 (+ 0.0 r1)) 
+                                beta (+ alpha (* 2 pi)))
+              (send dc draw-arc (+ 0.0 (xcor corner)) (+ 0.0 (ycor corner))
+                                (* 2 (+ 0.0 r1)) (* 2 (+ 0.0 r1))
+                                alpha beta)
+              ))))
 
 ; arcs by repeated segments
 
-
+     
 ;            (let ((beta (if (> (- beta alpha) pi) (- beta pi) beta)))
 ;              (send dc draw-arc (xcor corner) (ycor corner) 
 ;                                (* 2 r) (* 2 r) 
@@ -1291,7 +1326,7 @@
 ;  (send dc draw-ellipse (xcor p) (ycor p) (+ (xcor p) 3) (+ (ycor p) 3)))
 
 (define (draw-solid-string p s) 'string)
-
+  
 ; (draw-solid-disk (make-pixel (xcor p) (ycor p)) 3 'blue)
 ;    (draw-solid-string (make-pixel (+ (xcor p) 10) (+ (ycor p) 10)) s)))
 
@@ -1314,10 +1349,10 @@
 
 (define (drawseg p1 p2)
   (if drawp
-    (draw-solid-line p1
-                     p2
-                     "orange")
-    'foo))
+      (draw-solid-line p1
+                       p2
+                       "orange")
+  'foo))
 
 
 (define (drawtangent p1 p2)
@@ -1338,7 +1373,7 @@
 ;        (if (< (xcor p) 0) (label-1 (string-append s "'") (mirror p)) 'foo)
 ;        p)
 ;      p))
-
+ 
 
 ;; Drawing stuff
 
@@ -1346,13 +1381,13 @@
 
 (define (next p intersections)
   (if (null? intersections)
-    (callerror '(next: what) p intersections)
-    (if (point? intersections)
-      intersections
-      (if (< (distance p (car intersections))
-             (distance p (cadr intersections)))
-        (car intersections)
-        (cadr intersections)))))
+      (callerror '(next: what) p intersections)
+      (if (point? intersections)
+          intersections
+          (if (< (distance p (car intersections))
+                 (distance p (cadr intersections)))
+              (car intersections)
+              (cadr intersections)))))
 
 (define (last? l)
   (null? (cdr l)))
@@ -1366,48 +1401,68 @@
 (provide ymove)
 (define (ymove s d)
   (if (null? s)
-    '()
-    (if (point? s)
-      (label (labelof s) (point (xcor s) (+ (ycor s) d)))
-      (if (line? s)
-        (line (ymove (first-point s) d) (ymove (second-point s) d))
-        (if (circle? s)
-          (circle (ymove (center s) d) (radius s))
-          (if (begins-with? s 'curve)
-            (make-curve (ymove (cadr s) d) (ymove (caddr s) d) (map (lambda (a) (ymove a d)) (cadddr s)))
-            (if (begins-with? s 'arc)
-              (apply makearc (map (lambda (a) (ymove a d)) (cdr s)))
-              (if (begins-with? s 'tangent)
-                (callerror '(ymove: tangent?) s)
-                (if (begins-with? s 'segment)
-                  (apply makeseg (map (lambda (a) (ymove a d)) (cdr s)))
-                  (map (lambda (a) (ymove a d)) s))))))))))
+      '()
+      (if (point? s)
+          (label (labelof s) (point (xcor s) (+ (ycor s) d)))
+          (if (line? s)
+              (line (ymove (first-point s) d) (ymove (second-point s) d))
+              (if (circle? s)
+                  (circle (ymove (center s) d) (radius s))
+                  (if (begins-with? s 'curve)
+                      (make-curve (ymove (cadr s) d) (ymove (caddr s) d) (map (lambda (a) (ymove a d)) (cadddr s)))
+                      (if (begins-with? s 'arc)
+                          (apply makearc (map (lambda (a) (ymove a d)) (cdr s)))
+                          (if (begins-with? s 'tangent)
+                              (callerror '(ymove: tangent?) s)
+                              (if (begins-with? s 'segment)
+                                  (apply makeseg (map (lambda (a) (ymove a d)) (cdr s)))
+                                  (map (lambda (a) (ymove a d)) s))))))))))
+
+(provide xmove)
+(define (xmove s d)
+  (if (null? s)
+      '()
+      (if (point? s)
+          (label (labelof s) (point (+ (xcor s) d) (ycor s) ))
+          (if (line? s)
+              (line (xmove (first-point s) d) (xmove (second-point s) d))
+              (if (circle? s)
+                  (circle (xmove (center s) d) (radius s))
+                  (if (begins-with? s 'curve)
+                      (make-curve (xmove (cadr s) d) (xmove (caddr s) d) (map (lambda (a) (xmove a d)) (cadddr s)))
+                      (if (begins-with? s 'arc)
+                          (apply makearc (map (lambda (a) (xmove a d)) (cdr s)))
+                          (if (begins-with? s 'tangent)
+                              (callerror '(xmove: tangent?) s)
+                              (if (begins-with? s 'segment)
+                                  (apply makeseg (map (lambda (a) (xmove a d)) (cdr s)))
+                                  (map (lambda (a) (xmove a d)) s))))))))))
 
 
 (define (draw-curve start finish objects)
   (curve-1 (if (line? (car objects))
-             start
-             (closest start (intersect (car objects)
-                                       (line (center (car objects)) start))))
+               start
+               (closest start (intersect (car objects)
+                                         (line (center (car objects)) start))))
            finish
            objects))
 
 (define (curve-1 start finish objects)
   (if (last? objects)
-    (if (line? (car objects))
-      (drawsegment start finish)
-      (let ((cc (center (car objects)))
-            (rr (distance (center (car objects)) start)))
-        (let ((newfinish (closest finish (intersect (line cc finish)
-                                                    (circle cc rr)))))
-          (drawarc cc start newfinish arc-color))))
-    (let ((p (next start
-                   (intersect (car objects) (cadr objects)))))
-      (begin
-        (if (line? (car objects))
-          (drawsegment start p)
-          (drawarc (center (car objects)) start p arc-color))
-        (curve-1 p finish (cdr objects))))))
+      (if (line? (car objects))
+          (drawsegment start finish)
+          (let ((cc (center (car objects)))
+                (rr (distance (center (car objects)) start)))
+            (let ((newfinish (closest finish (intersect (line cc finish)
+                                                        (circle cc rr)))))
+              (drawarc cc start newfinish arc-color))))
+      (let ((p (next start
+                     (intersect (car objects) (cadr objects)))))
+        (begin
+          (if (line? (car objects))
+              (drawsegment start p)
+              (drawarc (center (car objects)) start p arc-color))
+          (curve-1 p finish (cdr objects))))))
 
 (provide makearc)
 (define (makearc x y z) (list 'arc x y z))
@@ -1420,44 +1475,48 @@
 
 (provide sketch)
 (define (sketch instrument)
+  (if (eq? instrument 'off!)
+      (set! tracing #f)
+      (if (eq? instrument 'on!)
+          (set! tracing #t)
   (if (null? instrument)
-    '()
-    (if (point? instrument)
-      (draw-point instrument "red")
-      (if (or (line? instrument) (circle? instrument))
-        (drawit instrument)
-        (if (begins-with? instrument 'curve)
-          (apply draw-curve (cdr instrument))
-          (if (begins-with? instrument 'arc)
-            (drawarc (cadr instrument) (caddr instrument) (cadddr instrument) arc-color)
-            (if (begins-with? instrument 'tangent)
-              (apply drawtangent (cdr instrument))
-              (if (begins-with? instrument 'segment)
-                (apply drawseg (cdr instrument))
-                (map sketch instrument)))))))))
+      '()
+      (if (point? instrument)
+          (draw-point instrument "red")
+          (if (or (line? instrument) (circle? instrument))
+              (drawit instrument)
+              (if (begins-with? instrument 'curve)
+                  (apply draw-curve (cdr instrument))
+                  (if (begins-with? instrument 'arc)
+                      (drawarc (cadr instrument) (caddr instrument) (cadddr instrument) arc-color)
+                      (if (begins-with? instrument 'tangent)
+                          (apply drawtangent (cdr instrument))
+                          (if (begins-with? instrument 'segment)
+                              (apply drawseg (cdr instrument))
+                              (map sketch instrument))))))))) ))
 
 ; a thicker-drawn circle
 (provide enhance)
 (define (enhance obj)
   (if (circle? obj)
-    (enhance-circle obj)
-    (if (line? obj)
-      (enhance-line obj)
-      (callerror '(callerror what?) obj))))
+      (enhance-circle obj)
+      (if (line? obj)
+          (enhance-line obj)
+          (callerror '(callerror what?) obj))))
 
 (define (enhance-line L)
   (let* ((x1 (xcor (first-point L)))
-         (y1 (ycor (first-point L)))
-         (x2 (xcor (second-point L)))
-         (y2 (ycor (second-point L)))
-         (el (list L
-                   (line (point (d+ x1) (d+ y1)) (point (d+ x2) (d+ y2)))
-                   (line (point (d- x1) (d- y1)) (point (d- x2) (d- y2))))))
+        (y1 (ycor (first-point L)))
+        (x2 (xcor (second-point L)))
+        (y2 (ycor (second-point L)))
+        (el (list L
+              (line (point (d+ x1) (d+ y1)) (point (d+ x2) (d+ y2)))
+              (line (point (d- x1) (d- y1)) (point (d- x2) (d- y2))))))
     (if (vertical? L)
-      (cons (line (point (+ 1  x1) (+ 1 y1)) (point (+ 1 x2) (+ 1 y2))) el)
-      (if (horizontal? L)
         (cons (line (point (+ 1  x1) (+ 1 y1)) (point (+ 1 x2) (+ 1 y2))) el)
-        el))))
+        (if (horizontal? L)
+            (cons (line (point (+ 1  x1) (+ 1 y1)) (point (+ 1 x2) (+ 1 y2))) el)
+            el))))
 
 (define (enhance-circle C)
   (let ((c (center C))
@@ -1477,15 +1536,13 @@
 
 (define (segs p l)
   (cons (makeseg p (car l))
-        (if (last? l)
-          '()
-          (segs (car l) (cdr l)))))
+         (if (last? l)
+             '()
+             (segs (car l) (cdr l)))))
 
 (provide dc)
 ; initialize graphic output
 ; choose a dest through a dialog
-
-;(define dc (new pdf-dc% [interactive #f] [width 1200] [height 1600])) 
 
 (define stdout (current-output-port))
 (current-output-port (open-output-nowhere))

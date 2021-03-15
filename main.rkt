@@ -1150,9 +1150,9 @@
                     (p2 (map-point (second-point l))))
                 (let ((l (line p1 p2)))
                   (if (eq? (slope l) 'infinity)
-                      (send dc draw-line (xcor p1) 1 (xcor p1) yy)
+                      (send dc draw-line (xcor p1) 0 (xcor p1) yy)
                       (let ((f (linefun l)))
-                        (send dc draw-line 1 (f 0) xx (f xx)))))))
+                        (send dc draw-line 0 (f 0) xx (f xx)))))))
             'nothing))
 
 (define (drawcircle circ c)
